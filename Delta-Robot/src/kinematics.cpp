@@ -1,8 +1,5 @@
-#include <StandardCplusplus.h>
 #include <vector>
 #include <math.h>
-#include <Servo.h>
-
 
 //Trigonometric constants
 const float sqrt3 = sqrt(3.0);
@@ -29,37 +26,11 @@ float next_position_x;
 float next_position_y;
 float next_position_z;
 
-int prog_button = 8;
-
-//Servo object init
-
-Servo servo_A;
-Servo servo_B;
-Servo servo_C;
-
-void setup() {
-    Serial.begin(9600);
-
-    pinMode(prog_button, INPUT);
-
-    servo_A.attach(13);
-    servo_B.attach(11);
-    servo_C.attach(9);
-
-    servo_A.write(0);
-    servo_B.write(0);
-    servo_C.write(0);
-}
-
 void loop() {
-
-    
-    
     //Obliczenie kąta o jaki trzeba obrócić serwo żeby przesunąć efektor we wskazane miejsce
     float gamma_A = inverseKinematics(next_position_x, next_position_y, next_position_z, 'A');
     float gamma_B = inverseKinematics(next_position_x, next_position_y, next_position_z, 'B');
-    float gamma_C = inverseKinematics(next_position_x, next_position_y, next_position_z, 'C'); 
-       
+    float gamma_C = inverseKinematics(next_position_x, next_position_y, next_position_z, 'C');       
 }
 
 /* Wyjaśnienie obliczeń zadania odwrotnego kinematyki:
@@ -72,37 +43,29 @@ float inverseKinematics(float posX, float posY, float posZ, char servo)
     float M_PI120 = 120.0 * (M_PI / 180.0);
     float M_PI240 = 240.0 * (M_PI / 180.0);
 
-    if (servo == 'A')
-    {
+    if (servo == 'A'){
         x = posX;
         y = posY;
         z = posZ;
     }
 
-    if (servo == 'B')
-    {
+    if (servo == 'B'){
         x =  (cos(M_PI120)*(posX)) + (sin(M_PI120)*(posY));
         y = -(sin(M_PI120)*(posX)) + (cos(M_PI120)*(posY));
         z = posZ;
     }
 
-    if (servo == 'C')
-    {
+    if (servo == 'C'){
         x =  (cos(M_PI240)*(posX)) + (sin(M_PI240)*(posY));
         y = -(sin(M_PI240)*(posX)) + (cos(M_PI240)*(posY));
         z = posZ;
     }
 
     float length1 = (length_a - length_d - y);
-
     float alpha = (360.0 / (2.0 * M_PI)) * (atan2(z, length1));
-
     float length2 = sqrt(pow(length1, 2.0) + pow(z, 2.0));
-
     float lenght3 = sqrt(pow(length_c, 2.0) - pow(x, 2.0));
-
     float beta = (360.0 / (2.0 * M_PI)) * (acos((pow(lenght3, 2) - pow(length2, 2.0) - pow(length_b, 2.0)) / (-2.0 * length2 * length_b)));
-
     float gamma = 180.0 - alpha - beta;
 
     return gamma;
@@ -165,22 +128,3 @@ int forwardKinematics(float theta1, float theta2, float theta3, float &x0, float
      y0 = (a2*z0 + b2)/dnm;
      return 0;
  }
-
-int programingButton(float )
-    {
-        if(prog_button == HIGH)
-        {
-            //Odczytanie aktualnego kąta serw
-            float A_angle = servo_A.read();
-            float B_angle = servo_B.read();
-            float C_angle = servo_C.read();
-            
-            //Obliczenie aktualnej lokalizacji (współrzędne)
-            forwardKinematics(A_angle, B_angle, C_angle, current_position_x, current_position_y, current_position_z);
-
-            float P1_x = current_position_x;
-            float P1_y = current_position_y;
-            float P1_z = current_position_z;
-
-        }   
-    }
