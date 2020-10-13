@@ -1,2 +1,2 @@
 # Delta-Robot
-My very first delta type robot
+Simple, STM32 (STM32Cube framework) based program for Delta robots
